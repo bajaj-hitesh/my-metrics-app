@@ -8,15 +8,15 @@ const register = new prometheus.Registry();
 
 // Create a Counter metric for the number of requests
 const requestCounter = new prometheus.Counter({
-  name: 'http_app_requests_total',
-  help: 'Total number of HTTP requests',
+  name: 'provisioning_requests_total',
+  help: 'Total number of Provisioning requests',
   labelNames: ['method', 'route', 'status_code'],
 });
 
 // Create a Histogram metric for the response time
 const responseHistogram = new prometheus.Histogram({
-  name: 'http_response_duration_seconds',
-  help: 'Histogram of HTTP response durations',
+  name: 'provisioning_response_duration_seconds',
+  help: 'Histogram of Provisioning response durations',
   labelNames: ['method', 'route', 'status_code'],
   buckets: [0.1, 0.5, 1, 2, 5, 10] // Adjust buckets as needed
 });
@@ -30,15 +30,18 @@ app.use((req, res, next) => {
   const end = responseHistogram.startTimer({ method: req.method, route: req.path });
 
   res.on('finish', () => {
-    requestCounter.inc({ method: req.method, route: req.path, status_code: res.statusCode });
+    if(req.url != '/metrics'){
+      requestCounter.inc({ method: req.method, route: req.path, status_code: res.statusCode });
     end({ method: req.method, route: req.path, status_code: res.statusCode });
+    }
+    
   });
 
   next();
 });
 
 // Define your routes
-app.get('/api/example', (req, res) => {
+app.get('/provision-account', (req, res) => {
   // Simulate some work with a delay
   setTimeout(() => {
     res.send('Hello, world!');
