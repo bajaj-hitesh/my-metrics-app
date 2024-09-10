@@ -45,7 +45,7 @@ app.get('/provision-account', (req, res) => {
   // Simulate some work with a delay
   setTimeout(() => {
     res.send('Hello, world!');
-  }, Math.random() * 1000); // Random delay to simulate work
+  }, Math.random() * 10); // Random delay to simulate work
 });
 
 // Endpoint to expose Prometheus metrics
